@@ -1,0 +1,10 @@
+{
+  "namespace": "IngoH",
+  "name": "HTCCL",
+  "description": "Loads custom content for Hard Time III",
+  "version_number": "1.10.6",
+  "dependencies": [
+    "BepInEx-BepInExPack-5.4.2100"
+  ],
+  "website_url": "https://github.com/IngoHHacks/HTCCL"
+}
