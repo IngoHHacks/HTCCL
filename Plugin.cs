@@ -44,7 +44,6 @@ public class Plugin : BaseUnityPlugin
     internal static ConfigEntry<bool> CacheEnabled { get; set; }
     internal static ConfigEntry<bool> Debug { get; set; }
     internal static ConfigEntry<bool> DebugRender { get; set; }
-    internal static ConfigEntry<string> DataSharingLevel { get; set; }
     internal static ConfigEntry<string> SaveFileName { get; set; }
     internal static ConfigEntry<string> PersistentDataOverride { get; set; }
 
@@ -96,10 +95,6 @@ public class Plugin : BaseUnityPlugin
                 "Enable debug mode. This will create debugging files in the /Debug folder.");
             DebugRender = this.Config.Bind("General", "DebugRender", false,
                 "Enable debug rendering. This will render debug information on the screen, such as collision boxes.");
-            DataSharingLevel = this.Config.Bind("General", "DataSharingLevel", "Full",
-                new ConfigDescription(
-                    "The level of data to share with the developer of this plugin. This data will be used to improve the plugin. If you don't want to share any data, set this to None. All data is anonymous.",
-                    new AcceptableValueList<string>("None", "Basic", "Full")));
             SaveFileName = this.Config.Bind("General", "SaveFileName", "ModdedSave",
                 "The name of the save file to save to. Set to 'Save' to use the vanilla save file (not recommended). If no modded save file exists, the vanilla save file contents will be copied to a new modded save file. Note that changing this would require manually renaming the save file if you want to continue using it.");
             if (!Directory.Exists(Locations.Data.FullName))
