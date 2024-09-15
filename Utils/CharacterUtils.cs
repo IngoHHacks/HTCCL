@@ -104,15 +104,10 @@ public class CharacterUtils
                     continue;
                 }
 
-                for (int i = 1; i < character.relation.Length; i++)
+                for (int i = 1; i < character.relation.Length - 1; i++)
                 {
-                    if (character.relation[i] == id)
-                    {
-                        character.relation[i] = 1;
-                    }
-                    else if (character.relation[i] > id)
-                    {
-                        character.relation[i]--;
+                    if (i >= id) {
+                        character.relation[i] = character.relation[i+1];
                     }
                 }
 
@@ -155,6 +150,14 @@ public class CharacterUtils
             Array.Resize(ref Progress.charUnlock, Characters.no_chars + 1);
             Array.Resize(ref GLPGLJAJJOP.APPDIBENDAH.savedChars, Characters.no_chars + 1);
             Array.Resize(ref GLPGLJAJJOP.APPDIBENDAH.charUnlock, Characters.no_chars + 1);
+            for (int i = 1; i <= Characters.no_chars; i++)
+            {
+                if (Characters.c[i] == null)
+                {
+                    continue;
+                }
+                Array.Resize(ref Characters.c[i].relation, Characters.no_chars + 1);
+            }
             CharacterEvents.InvokeAfterCharacterRemoved(id, delC);
         }
         catch (Exception e)
@@ -175,6 +178,14 @@ public class CharacterUtils
             Array.Resize(ref Progress.charUnlock, Characters.no_chars + 1);
             Array.Resize(ref GLPGLJAJJOP.APPDIBENDAH.savedChars, Characters.no_chars + 1);
             Array.Resize(ref GLPGLJAJJOP.APPDIBENDAH.charUnlock, Characters.no_chars + 1);
+            for (int i = 1; i <= Characters.no_chars; i++)
+            {  
+                if (Characters.c[i] == null)
+                {
+                    continue;
+                }
+                Array.Resize(ref Characters.c[i].relation, Characters.no_chars + 1);
+            }
             Progress.charUnlock[Characters.no_chars] = 1;
             Characters.c[Characters.no_chars] = character;
             ((MappedCharacter)Characters.c[Characters.no_chars]).Generate(Characters.no_chars);
@@ -185,7 +196,6 @@ public class CharacterUtils
                 {
                     continue;
                 }
-                Array.Resize(ref c.relation, Characters.no_chars + 1);
             }
             CharacterEvents.InvokeAfterCharacterAdded(Characters.no_chars, Characters.c[Characters.no_chars]);
         }

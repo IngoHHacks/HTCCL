@@ -37,7 +37,6 @@ internal class SaveFilePatch
             Array.Resize(ref Progress.charUnlock, Characters.no_chars + 1);
             Array.Resize(ref GLPGLJAJJOP.APPDIBENDAH.charUnlock, Characters.no_chars + 1);
             Array.Resize(ref GLPGLJAJJOP.APPDIBENDAH.savedChars, Characters.no_chars + 1);
-            
             for (int i = 1; i <= Characters.no_chars; i++)
             {
                 if (GLPGLJAJJOP.APPDIBENDAH.savedChars[i] == null)
@@ -46,31 +45,25 @@ internal class SaveFilePatch
                     GLPGLJAJJOP.APPDIBENDAH.savedChars[i] = MappedCharacters.CopyClass(GLPGLJAJJOP.APPDIBENDAH.savedChars[1]);
                 }
             }
+            for (int i = 0; i <= Characters.no_chars; i++)
+            {
+                if (Characters.c[i] == null)
+                {
+                    continue;
+                }
+                Array.Resize(ref Characters.c[i].relation, Characters.no_chars + 1);
+            }
         }
         catch (Exception e)
         {
             LogError(e);
         }
     }
-    
-    /*
-     * Patch:
-     * - Fixes corrupted save data before rosters are loaded.
-     */
-    [HarmonyPatch(typeof(SaveData), nameof(SaveData.CDLIDDFKFEL))]
-    [HarmonyPrefix]
-    public static void SaveData_CDLIDDFKFEL(SaveData __instance)
-    {
-        if (GLPGLJAJJOP.APPDIBENDAH.savedChars != null)
-        {
-            SaveRemapper.FixBrokenSaveData();
-        }
-    }
-    
+
     /*
      * Patch:
      * - Clears the previously imported characters list after default data is loaded.
-     * - Fixes corrupted save data after default data is loaded.
+     * - Fixes corrupted save data and relations after default data is loaded.
      */
     [HarmonyPatch(typeof(UnmappedSaveSystem), nameof(UnmappedSaveSystem.NJMFCPGCKNL))]
     [HarmonyPostfix]
@@ -79,6 +72,14 @@ internal class SaveFilePatch
         if (SceneManager.GetActiveScene().name == "Loading")
         {
             return;
+        }
+        for (int i = 0; i <= Characters.no_chars; i++)
+        {
+            if (Characters.c[i] == null)
+            {
+                continue;
+            }
+            Array.Resize(ref Characters.c[i].relation, Characters.no_chars + 1);
         }
         try
         {
@@ -91,7 +92,80 @@ internal class SaveFilePatch
         {
             LogError(e);
         }
+        
     }
+    
+    /*
+     * Patch:
+     * - Fixes corrupted save data before rosters are loaded.
+     */
+    [HarmonyPatch(typeof(SaveData), nameof(SaveData.CDLIDDFKFEL))]
+    [HarmonyPrefix]
+    public static void SaveData_CDLIDDFKFEL_Pre(SaveData __instance, int FIHDANPPMGC)
+    {
+        if (FIHDANPPMGC > 0) {
+            try
+            {
+                Characters.no_chars = __instance.backupChars.Length;
+
+                if (Characters.star > Characters.no_chars)
+                {
+                    Characters.star = 1;
+                }
+                Array.Resize(ref Characters.c, Characters.no_chars + 1);
+                Array.Resize(ref Progress.charUnlock, Characters.no_chars + 1);
+                Array.Resize(ref GLPGLJAJJOP.APPDIBENDAH.charUnlock, Characters.no_chars + 1);
+                Array.Resize(ref GLPGLJAJJOP.APPDIBENDAH.savedChars, Characters.no_chars + 1);
+                for (int i = 1; i <= Characters.no_chars; i++)
+                {
+                    if (GLPGLJAJJOP.APPDIBENDAH.savedChars[i] == null)
+                    {
+                        Characters.c[i] = MappedCharacters.CopyClass(Characters.c[1]);
+                        GLPGLJAJJOP.APPDIBENDAH.savedChars[i] = MappedCharacters.CopyClass(GLPGLJAJJOP.APPDIBENDAH.savedChars[1]);
+                    }
+                }
+                for (int i = 0; i <= Characters.no_chars; i++)
+                {
+                    if (Characters.c[i] == null)
+                    {
+                        continue;
+                    }
+                    Array.Resize(ref Characters.c[i].relation, Characters.no_chars + 1);
+                }
+                CharacterMappings.CharacterMap.PreviouslyImportedCharacters.Clear();
+                CharacterMappings.CharacterMap.PreviouslyImportedCharacterIds.Clear();
+            }
+            catch (Exception e)
+            {
+                LogError(e);
+            }
+        }
+        else {
+            if (GLPGLJAJJOP.APPDIBENDAH.savedChars != null)
+            {
+                SaveRemapper.FixBrokenSaveData();
+            }
+        }
+    }
+
+    /*
+     * Patch:
+     * - Fixes relations after loading backup data
+     */
+    [HarmonyPatch(typeof(SaveData), nameof(SaveData.CDLIDDFKFEL))]
+    [HarmonyPostfix]
+    public static void SaveData_CDLIDDFKFEL_Post(SaveData __instance, int FIHDANPPMGC)
+    {
+        for (int i = 0; i <= Characters.no_chars; i++)
+        {
+            if (Characters.c[i] == null)
+            {
+                continue;
+            }
+            Array.Resize(ref Characters.c[i].relation, Characters.no_chars + 1);
+        }
+    }
+    
     
     /*
      * Patch:
@@ -160,6 +234,14 @@ internal class SaveFilePatch
             Array.Resize(ref Characters.c, Characters.no_chars + 1);
             Array.Resize(ref Progress.charUnlock, Characters.no_chars + 1);
             Array.Resize(ref GLPGLJAJJOP.APPDIBENDAH.charUnlock, Characters.no_chars + 1);
+            for (int i = 1; i <= Characters.no_chars; i++)
+            {
+                if (Characters.c[i] == null)
+                {
+                    continue;
+                }
+                Array.Resize(ref Characters.c[i].relation, Characters.no_chars + 1);
+            }
             fileStream.Close();
         }
         catch (Exception e)
@@ -256,6 +338,19 @@ internal class SaveFilePatch
                                 break;
                             }
 
+                            for (var i = 1; i <= Characters.no_chars; i++) {
+                                if (Characters.c[i] == null)
+                                {
+                                    continue;
+                                }
+                                Characters.c[i].relation[id] = importedCharacter.relation[i];
+                                if (GLPGLJAJJOP.APPDIBENDAH.savedChars[i] == null)
+                                {
+                                    continue;
+                                }
+                                GLPGLJAJJOP.APPDIBENDAH.savedChars[i].relation[id] = importedCharacter.relation[i];
+                            }
+
                             Character oldCharacter = GLPGLJAJJOP.APPDIBENDAH.savedChars[id];
                             string name = importedCharacter.name;
                             string oldCharacterName = oldCharacter.name;
@@ -269,14 +364,28 @@ internal class SaveFilePatch
                             int id2 = Characters.no_chars + 1;
                             importedCharacter.id = id2;
                             CharacterEvents.InvokeBeforeCharacterAdded(id2, importedCharacter, CharacterAddedEvent.Source.Import);
+                            Characters.no_chars++;
                             try
                             {
                                 if (GLPGLJAJJOP.APPDIBENDAH.savedChars.Length <= id2)
                                 {
-                                    Array.Resize(ref GLPGLJAJJOP.APPDIBENDAH.savedChars, id2 + 1);
-                                    Array.Resize(ref GLPGLJAJJOP.APPDIBENDAH.charUnlock, id2 + 1);
-                                    Array.Resize(ref Characters.c, id2 + 1);
-                                    Array.Resize(ref Progress.charUnlock, id2 + 1);
+                                    Array.Resize(ref GLPGLJAJJOP.APPDIBENDAH.savedChars, Characters.no_chars + 1);
+                                    Array.Resize(ref GLPGLJAJJOP.APPDIBENDAH.charUnlock, Characters.no_chars + 1);
+                                    Array.Resize(ref Characters.c, Characters.no_chars + 1);
+                                    Array.Resize(ref Progress.charUnlock, Characters.no_chars + 1);
+                                    for (int i = 1; i <= Characters.no_chars; i++)
+                                    {
+                                        if (Characters.c[i] == null)
+                                        {
+                                            continue;
+                                        }
+                                        Array.Resize(ref Characters.c[i].relation, Characters.no_chars + 1);
+                                        if (GLPGLJAJJOP.APPDIBENDAH.savedChars[i] == null)
+                                        {
+                                            continue;
+                                        }
+                                        Array.Resize(ref GLPGLJAJJOP.APPDIBENDAH.savedChars[i].relation, Characters.no_chars + 1);
+                                    }
                                     GLPGLJAJJOP.APPDIBENDAH.charUnlock[id2] = 1;
                                     Progress.charUnlock[id2] = 1;
                                 }
@@ -286,9 +395,20 @@ internal class SaveFilePatch
                                         $"The array of characters is larger than the number of characters. This should not happen. The character {GLPGLJAJJOP.APPDIBENDAH.savedChars[id2].name} will be overwritten.");
                                 }
 
-                                GLPGLJAJJOP.APPDIBENDAH.savedChars[id2] = importedCharacter;
+                                for (var i = 1; i <= Characters.no_chars; i++) {
+                                    if (Characters.c[i] == null)
+                                    {
+                                        continue;
+                                    }
+                                    Characters.c[i].relation[id2] = importedCharacter.relation[i];
+                                    if (GLPGLJAJJOP.APPDIBENDAH.savedChars[i] == null)
+                                    {
+                                        continue;
+                                    }
+                                    GLPGLJAJJOP.APPDIBENDAH.savedChars[i].relation[id2] = importedCharacter.relation[i];
+                                }
 
-                                Characters.no_chars++;
+                                GLPGLJAJJOP.APPDIBENDAH.savedChars[id2] = importedCharacter;
                                 LogInfo(
                                     $"Imported character with id {id2} and name {importedCharacter.name}. Incremented number of characters to {Characters.no_chars}.");
                                 CharacterEvents.InvokeAfterCharacterAdded(id2, importedCharacter,
@@ -326,6 +446,19 @@ internal class SaveFilePatch
                                 LogWarning(
                                     $"Could not find character with id {file.CharacterData.id?.ToString() ?? "null"} and name {file.FindName ?? file.CharacterData.name ?? "null"} using override mode {overrideMode}. Skipping.");
                                 break;
+                            }
+
+                            for (var i = 1; i <= Characters.no_chars; i++) {
+                                if (Characters.c[i] == null)
+                                {
+                                    continue;
+                                }
+                                Characters.c[i].relation[id3] = importedCharacter.relation[i];
+                                if (GLPGLJAJJOP.APPDIBENDAH.savedChars[i] == null)
+                                {
+                                    continue;
+                                }
+                                GLPGLJAJJOP.APPDIBENDAH.savedChars[i].relation[id3] = importedCharacter.relation[i];
                             }
 
                             Character oldCharacter2 = GLPGLJAJJOP.APPDIBENDAH.savedChars[id3];
@@ -392,7 +525,7 @@ internal class SaveFilePatch
             LogInfo($"Saving {NonSavedData.DeletedCharacters.Count} characters to purgatory.");
             foreach (Character character in NonSavedData.DeletedCharacters)
             {
-                BetterCharacterData moddedCharacter = BetterCharacterData.FromRegularCharacter(character, Characters.c);
+                BetterCharacterData moddedCharacter = BetterCharacterData.FromRegularCharacter(character, Characters.c, true);
                 BetterCharacterDataFile file = new() { characterData = moddedCharacter, overrideMode = "append" };
                 string json = JsonConvert.SerializeObject(file, Formatting.Indented);
                 string path = Path.Combine(Locations.DeletedCharacters.FullName, $"{character.id}_{Escape(character.name)}.character");
@@ -466,4 +599,22 @@ internal class SaveFilePatch
             Array.Resize(ref Progress.charUnlock, __instance.savedChars.Length);
         }
     }
+    
+    /*
+     * Patch:
+     * - Fixes stock for resized character arrays.
+     */
+    [HarmonyPatch(typeof(JFLEBEBCGFA), nameof(JFLEBEBCGFA.OBNLOCICEEO))]
+    [HarmonyPrefix]
+    public static void JFLEBEBCGFA_OBNLOCICEEO()
+    {
+        for (JFLEBEBCGFA.KJELLNJFNGO = 1; JFLEBEBCGFA.KJELLNJFNGO < JFLEBEBCGFA.LOHDDEFHOIF.Length; JFLEBEBCGFA.KJELLNJFNGO++)
+        {
+            if (JFLEBEBCGFA.LOHDDEFHOIF[JFLEBEBCGFA.KJELLNJFNGO].holder > Characters.no_chars)
+            {
+                JFLEBEBCGFA.LOHDDEFHOIF[JFLEBEBCGFA.KJELLNJFNGO].holder = 0;
+            }
+        }
+    }
 }
+

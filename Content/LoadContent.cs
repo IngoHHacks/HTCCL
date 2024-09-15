@@ -813,6 +813,10 @@ internal static class LoadContent
                     arena.name = fileName;
                     CustomArenaPrefabs.Add(arena);
                     World.no_locations++;
+                    if (Progress.mapUnlock.Length < World.no_locations + 1) {
+                        Array.Resize(ref Progress.mapUnlock, World.no_locations + 1);
+                        Progress.mapUnlock[World.no_locations] = 1;
+                    }
                     LoadedAssets++;
                     LastAsset = fileName;
                 }

@@ -142,7 +142,7 @@ internal class BetterCharacterData
     
     public string VERSION = "1.0.0-HT";
 
-    public static BetterCharacterData FromRegularCharacter(Character character, Character[] allCharacters)
+    public static BetterCharacterData FromRegularCharacter(Character character, Character[] allCharacters, bool ignoreRelations = false)
     {
         BetterCharacterData bcd =
             JsonConvert.DeserializeObject<BetterCharacterData>(JsonConvert.SerializeObject(character))!;
@@ -153,17 +153,29 @@ internal class BetterCharacterData
         }
 
         bcd.relationC = new string[character.relation.Length];
-        for (int i = 0; i < character.relation.Length; i++)
-        {
-            if (character.relation[i] >= allCharacters.Length)
+        if (!ignoreRelations) {
+            for (int i = 0; i < character.relation.Length; i++)
+            {
+                if (i == 0)
+                {
+                    bcd.relationC[i] = "0";
+                    continue;
+                }
+                if (character.relation[i] >= allCharacters.Length)
+                {
+                    bcd.relationC[i] = "0";
+                    continue;
+                }
+
+                bcd.relationC[i] = character.relation[i] == 0
+                    ? "0"
+                    : allCharacters[i].name + "=" + character.relation[i];
+            }
+        } else {
+            for (int i = 0; i < character.relation.Length; i++)
             {
                 bcd.relationC[i] = "0";
-                continue;
             }
-
-            bcd.relationC[i] = character.relation[i] == 0
-                ? "0"
-                : allCharacters[character.relation[i]].name + "@" + character.relation[i];
         }
 
         bcd.grudge = 0;
@@ -188,25 +200,37 @@ internal class BetterCharacterData
             character.costume[i] = this.costumeC[i].ToRegularCostume();
         }
 
-        character.relation = new int[this.relationC.Length];
-        for (int i = 0; i < this.relationC.Length; i++)
+        character.relation = new int[Characters.no_chars + 2];
+        if (this.VERSION.EndsWith("-HT"))
         {
-            if (this.relationC[i] == "0")
+            for (int i = 0; i < this.relationC.Length; i++)
             {
-                character.relation[i] = 0;
-                continue;
-            }
-
-            string[] split = this.relationC[i].Split('@');
-            string name = split[0];
-            try
-            {
-                character.relation[i] = allCharacters.Single(c => c != null && c.name != null && c.name == name).id;
-            }
-            catch (Exception)
-            {
-                character.relation[i] = int.Parse(split[1]);
-                LogWarning("Failed to find character with name " + name + ", using id instead.");
+                if (i == 0)
+                {
+                    continue;
+                }
+                if (this.relationC[i] == "0")
+                {
+                    continue;
+                }
+                string[] split = this.relationC[i].Split('=');
+                string name = split[0];
+                try
+                {
+                    var id = allCharacters.Single(c => c != null && c.name != null && c.name == name).id;
+                    character.relation[id] = int.Parse(split[1]);
+                }
+                catch (Exception)
+                {
+                    if (i >= character.relation.Length)
+                    {
+                        LogWarning("Failed to find character with name " + name + ", skipping because id is out of bounds.");
+                        continue;
+                    }
+                    character.relation[i] = int.Parse(split[1]);
+                    LogWarning("Failed to find character with name " + name + ", using id instead.");
+                
+                }
             }
         }
         character.grudge = 0;

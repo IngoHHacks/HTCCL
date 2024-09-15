@@ -41,20 +41,20 @@ internal class ModTabPatch
         var tab = GameObject.Find("Tab00");
         // Duplicate the tab
         var newTab = Object.Instantiate(tab, tab.transform.parent);
-        newTab.name = "Tab05";
+        newTab.name = "Tab06";
         newTab.transform.Find("Title").GetComponent<Text>().text = "Mods";
         float diffX = 0;
-        for (int i = 0; i < 6; i++)
+        for (int i = 0; i < 7; i++)
         {
             var tabObj = GameObject.Find("Tab" + i.ToString("00"));
-            tabObj.transform.localScale = new Vector3(tabObj.transform.localScale.x * (5f / 6f),
+            tabObj.transform.localScale = new Vector3(tabObj.transform.localScale.x * (6f / 7f),
                 tabObj.transform.localScale.y, tabObj.transform.localScale.z);
             if (tab != tabObj)
             {
                 if (diffX == 0)
                 {
                     var diffO = tabObj.transform.localPosition.x - tab.transform.localPosition.x;
-                    diffX = diffO * (5f / 6f);
+                    diffX = diffO * (6f / 7f);
                     var diffDiffHalf = (diffO - diffX) / 2f;
                     
                     tab.transform.localPosition = new Vector3(tab.transform.localPosition.x - diffDiffHalf,
@@ -102,7 +102,7 @@ internal class ModTabPatch
     [HarmonyPostfix]
     public static void Scene_Options_Update(Scene_Options __instance)
     {
-        if (MappedMenus.tab == 5)
+        if (MappedMenus.tab == 6)
         {
             int oldModSettingSelected = modSettingSelected;
             modSettingSelected = modSettingSelected < 0 ? 0 : Mathf.RoundToInt(((MappedMenu)MappedMenus.menu[1]).ChangeValue(modSettingSelected, 1, 10, 0, AllMods.Instance.NumMods-1, 1));
@@ -204,6 +204,7 @@ internal class ModTabPatch
                     Object.Destroy(info.transform.Find("Background").gameObject);
                     Object.Destroy(info.transform.Find("Border").gameObject);
                     info.transform.Find("Title").gameObject.GetComponent<Text>().text = "";
+
                 }
             }
             

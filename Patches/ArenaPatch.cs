@@ -1,10 +1,6 @@
-using System;
-using System.Diagnostics;
 using System.Reflection;
 using System.Text.RegularExpressions;
-using UnityEngine;
 using HTCCL.Content;
-using HTCCL.Internal;
 using Object = UnityEngine.Object;
 using Random = UnityEngine.Random;
 
@@ -598,71 +594,6 @@ internal class ArenaPatch
 
             //Set yOverride back to 0 afterwards so going to another map doesn't spawn all furniture in the air...
             yOverride = 0f;
-        }
-    }
-    
-    //oldArenaFurnitureCount used to make sure furniture number on custom arena is correct when swapping between multiple custom arenas
-    private static int oldArenaFurnitureCount;
-    
-    [HarmonyPatch(typeof(Scene_Match_Setup), nameof(Scene_Match_Setup.Update))]
-    [HarmonyPrefix]
-    public static void Scene_Match_Setup_Update_Pre(Scene_Match_Setup __instance)
-    {
-        if (World.location > VanillaCounts.Data.NoLocations)
-        {
-            if (World.location != __instance.oldArena)
-            {
-                if (World.location <= 1 && __instance.oldArena <= 1)
-                {
-                    World.KELMLPGMAPC(1);
-                }
-                else
-                {
-                    World.ICGNAJFLAHL(1);
-                }
-
-                World.EFNENMKELIA();
-                World.CJMBGNBDOFI();
-
-                //Calc furniture we should have on custom arena
-                GameObject[] announcerObjects = Object.FindObjectsOfType<GameObject>()
-                    .Where(obj => obj.name.StartsWith("AnnouncerDeskBundle")).ToArray();
-                GameObject[] gameObjects = Object.FindObjectsOfType<GameObject>()
-                    .Where(obj => obj.name.StartsWith("GameObject:")).ToArray();
-                int steps = 0;
-                if (World.ringShape > 0)
-                {
-                    steps = 2;
-                }
-
-                HAPFAOIMGOL.CCFGHKNBOEL = gameObjects.Length + (announcerObjects.Length * 3) + steps -
-                                          oldArenaFurnitureCount;
-                oldArenaFurnitureCount = HAPFAOIMGOL.CCFGHKNBOEL - steps;
-                HAPFAOIMGOL.OOKPLJBLDBG = 0;
-                int num = JFLEBEBCGFA.KFKFKMMEFFG(World.location);
-                if (JFLEBEBCGFA.CCFGHKNBOEL < num)
-                {
-                    JFLEBEBCGFA.CCFGHKNBOEL = num;
-                }
-            }
-
-            __instance.oldArena = World.location;
-        }
-        else
-        {
-            oldArenaFurnitureCount = 0;
-        }
-    }
-    
-    [HarmonyPatch(typeof(Scene_Match_Setup), nameof(Scene_Match_Setup.Update))]
-    [HarmonyPostfix]
-    public static void Scene_Match_Setup_Update_Post()
-    {
-        if (World.location > VanillaCounts.Data.NoLocations)
-        {
-            //Force barriers to 0, can't work out how to disable option since its controlled by arena shape
-            //So just forcing it to always be none does the job well enough
-            World.arenaBarriers = 0;
         }
     }
 

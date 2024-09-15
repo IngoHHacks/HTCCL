@@ -180,6 +180,51 @@ public class Plugin : BaseUnityPlugin
                 }
                 return $"Reset {numRemoved} imported character{(numRemoved == 1 ? "" : "s")}";
             }, true);
+
+            this.RegisterCustomButton("Unlock All Characters", () =>
+            {
+                for (int i = 0; i <Progress.charUnlock.Length; i++)
+                {
+                    Progress.charUnlock[i] = 1;
+                }
+                return "All characters unlocked!";
+            }, true);
+
+            
+            this.RegisterCustomButton("Unlock All Maps", () =>
+            {
+                for (int i = 0; i < Progress.mapUnlock.Length; i++)
+                {
+                    Progress.mapUnlock[i] = 1;
+                }
+                return "All maps unlocked!";
+            }, true);
+
+            this.RegisterCustomButton("Unlock All Trophies", () =>
+            {
+                for (int i = 0; i < Progress.trophy.Length; i++)
+                {
+                    Progress.trophy[i] = 1;
+                }
+                return "All tropies unlocked!";
+            }, true);
+
+            this.RegisterCustomButton("Unlock Everything", () =>
+            {
+                for (int i = 0; i <Progress.charUnlock.Length; i++)
+                {
+                    Progress.charUnlock[i] = 1;
+                }
+                for (int i = 0; i < Progress.mapUnlock.Length; i++)
+                {
+                    Progress.mapUnlock[i] = 1;
+                }
+                for (int i = 0; i < Progress.trophy.Length; i++)
+                {
+                    Progress.trophy[i] = 1;
+                }
+                return "Everything unlocked!";
+            }, true);
         }
         catch (Exception e)
         {
