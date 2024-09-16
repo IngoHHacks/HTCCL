@@ -608,6 +608,21 @@ internal class SaveFilePatch
     [HarmonyPrefix]
     public static void JFLEBEBCGFA_OBNLOCICEEO()
     {
+        FixStock();
+    }
+
+    /*
+     * Patch:
+     * - Fixes stock for resized character arrays.
+     */
+    [HarmonyPatch(typeof(Character), nameof(Character.LNANBDHGONM))]
+    [HarmonyPrefix]
+    public static void Character_LNANBDHGONM()
+    {
+        FixStock();
+    }
+
+    private static void FixStock() {
         for (JFLEBEBCGFA.KJELLNJFNGO = 1; JFLEBEBCGFA.KJELLNJFNGO < JFLEBEBCGFA.LOHDDEFHOIF.Length; JFLEBEBCGFA.KJELLNJFNGO++)
         {
             if (JFLEBEBCGFA.LOHDDEFHOIF[JFLEBEBCGFA.KJELLNJFNGO].holder > Characters.no_chars)

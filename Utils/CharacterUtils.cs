@@ -132,6 +132,14 @@ public class CharacterUtils
                 {
                     character.grudge--;
                 }
+                if (character.team == id)
+                {
+                    character.team = 1;
+                }
+                else if (character.team > id)
+                {
+                    character.team--;
+                }
             }
             
             for (int i = id; i < Characters.c.Length - 1; i++)

@@ -10,9 +10,9 @@ namespace HTCCL;
 [HarmonyPatch]
 public class Plugin : BaseUnityPlugin
 {
-    public const string PluginGuid = "IngoH.WrestlingEmpire.HTCCL";
+    public const string PluginGuid = "IngoH.HardTime.HTCCL";
     public const string PluginName = "HTCCL";
-    public const string PluginVer = "0.1.0";
+    public const string PluginVer = "0.1.1";
     public const string PluginPatchVer = "";
     public const string PluginVerLong = "v" + PluginVer + PluginPatchVer;
     public const float PluginVersion = 1.02f;
@@ -182,6 +182,7 @@ public class Plugin : BaseUnityPlugin
                 {
                     Progress.charUnlock[i] = 1;
                 }
+                MappedSaveSystem.request = 1;
                 return "All characters unlocked!";
             }, true);
 
@@ -192,6 +193,7 @@ public class Plugin : BaseUnityPlugin
                 {
                     Progress.mapUnlock[i] = 1;
                 }
+                MappedSaveSystem.request = 1;
                 return "All maps unlocked!";
             }, true);
 
@@ -201,6 +203,7 @@ public class Plugin : BaseUnityPlugin
                 {
                     Progress.trophy[i] = 1;
                 }
+                MappedSaveSystem.request = 1;
                 return "All tropies unlocked!";
             }, true);
 
@@ -218,6 +221,7 @@ public class Plugin : BaseUnityPlugin
                 {
                     Progress.trophy[i] = 1;
                 }
+                MappedSaveSystem.request = 1;
                 return "Everything unlocked!";
             }, true);
         }

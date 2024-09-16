@@ -11,6 +11,8 @@ namespace HTCCL.Patches;
 [HarmonyPatch]
 internal class ModTabPatch
 {
+    internal static float accel = 1f;
+
     /*
      * Patch:
      * - Adds another tab to the options menu.
@@ -346,9 +348,15 @@ internal class ModTabPatch
                                 max = range.MaxValue;
                             }
 
+                            var inc = Mathf.Pow(10, (int) accel);
                             int current = (int)config[config.Keys.ToList()[i - 2]].BoxedValue;
+                            var currentExp = (int)Math.Floor(Math.Log10(Math.Abs(current))) * Math.Sign(current);
+                            if (currentExp > 3) {
+                                inc *= Mathf.Pow(10, currentExp - 3);
+                            }
+
                             current = Mathf.RoundToInt(
-                                ((MappedMenu)MappedMenus.menu[i]).ChangeValue(current, 1, 10, min, max, 1));
+                                ((MappedMenu)MappedMenus.menu[i]).ChangeValue(current, inc, 10, min, max, 0));
                             config[config.Keys.ToList()[i - 2]].BoxedValue = current;
                             ((MappedMenu)MappedMenus.menu[i]).value =
                                 config[config.Keys.ToList()[i - 2]].BoxedValue.ToString();
@@ -365,7 +373,7 @@ internal class ModTabPatch
                                 max = range.MaxValue;
                             }
 
-                            float def = config[config.Keys.ToList()[i - 2]].DefaultValue == null
+                                                        float def = config[config.Keys.ToList()[i - 2]].DefaultValue == null
                                 ? 0
                                 : (float)config[config.Keys.ToList()[i - 2]].DefaultValue;
                             int defDec = !def.ToString(CultureInfo.CurrentCulture).Contains(".")
@@ -373,9 +381,15 @@ internal class ModTabPatch
                                 : def.ToString(CultureInfo.CurrentCulture).Split('.')[1].Length;
                             int dec = Math.Max(2, defDec);
                             float inc = (float)Math.Round(1f / Math.Pow(10, dec), dec);
+                            inc *= Mathf.Pow(10, (int) accel);
 
                             float current = (float)config[config.Keys.ToList()[i - 2]].BoxedValue;
-                            current = ((MappedMenu)MappedMenus.menu[i]).ChangeValue(current, inc, 10, min, max, 1);
+                            var currentExp = (int)Math.Floor(Math.Log10(Math.Abs(current))) * Math.Sign(current);
+                            if (currentExp > 3) {
+                                inc *= Mathf.Pow(10, currentExp - 3);
+                            }
+
+                            current = ((MappedMenu)MappedMenus.menu[i]).ChangeValue(current, inc, 10, min, max, 0);
                             current = (float)Math.Round(current, dec);
                             config[config.Keys.ToList()[i - 2]].BoxedValue = current;
                             ((MappedMenu)MappedMenus.menu[i]).value =
@@ -562,5 +576,23 @@ internal class ModTabPatch
             return s + str;
         }
         return s;
+    }
+
+    /*
+     * Patch:
+     * Sets the 'accel' value when the user keeps changing a value for a long time.
+     */
+    [HarmonyPatch(typeof(UnmappedMenus), nameof(UnmappedMenus.BBICLKGGIGB))]
+    [HarmonyPrefix]
+    public static void Menus_BBICLKGGIGB()
+    {
+        if (MappedMenus.changed == 0f)
+        {
+            accel = 1f;
+        }
+        else
+        {
+            accel = Mathf.MoveTowards(accel, 5f, 0.01f * (1f / MappedMenus.PausedSpeedOffset()));
+        }
     }
 }
