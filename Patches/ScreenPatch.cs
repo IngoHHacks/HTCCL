@@ -254,7 +254,7 @@ public class ScreenPatch
                     Prefixes = prefixes;
                     SavePrefixes();
                     MappedSound.musicChannel.Stop();
-                    MappedSound.musicFile[0] = MappedGlobals.LoadAsset("Music", "Theme00") as AudioClip;
+                    MappedSound.musicFile[0] = MappedGlobals.LoadAsset("Music", "Theme01") as AudioClip;
                     MappedSound.musicChannel.clip = MappedSound.musicFile[0];
                     MappedSound.musicChannel.time = 0f;
                     MappedSound.musicChannel.Play();

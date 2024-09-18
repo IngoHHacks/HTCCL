@@ -1084,7 +1084,6 @@ internal static class LoadContent
                 return name;
             }
         }
-
         return child.Name;
     }
 
