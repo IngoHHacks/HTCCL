@@ -598,6 +598,10 @@ internal class SaveFilePatch
         {
             Array.Resize(ref Progress.charUnlock, __instance.savedChars.Length);
         }
+        if (Progress.mapUnlock.Length < __instance.mapUnlock.Length)
+        {
+            Array.Resize(ref Progress.mapUnlock, __instance.mapUnlock.Length);
+        }
     }
     
     /*
