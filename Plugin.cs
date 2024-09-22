@@ -12,10 +12,10 @@ public class Plugin : BaseUnityPlugin
 {
     public const string PluginGuid = "IngoH.HardTime.HTCCL";
     public const string PluginName = "HTCCL";
-    public const string PluginVer = "0.1.3";
+    public const string PluginVer = "1.0.0";
     public const string PluginPatchVer = "";
     public const string PluginVerLong = "v" + PluginVer + PluginPatchVer;
-    public const float PluginVersion = 1.02f;
+    public const float PluginVersion = 1.03f;
     public static readonly float GameVersion = MappedGlobals.optVersion;
 
     public const bool PreRelease = false;

@@ -42,6 +42,8 @@ global using System.IO;
 global using UnityEngine;
 global using HTCCL.Internal;
 global using HTCCL.Utils;
+global using HTCCL.Managers;
+global using HTCCL.API.Types;
 global using static HTCCL.Utils.TextureUtils;
 global using static HTCCL.Utils.MenuUtils;
 global using static HTCCL.Content.CustomContent;

@@ -1,4 +1,5 @@
 using HTCCL.Animation;
+using HTCCL.API;
 using HTCCL.Saves;
 using static HTCCL.Utils.NumberFormatUtils;
 
@@ -52,6 +53,7 @@ internal static class CustomContent
     
     internal static readonly List<GameObject>  CustomArenaPrefabs = new();
     internal static readonly List<AnimationData> CustomAnimations = new();
+    internal static readonly List<PromoData> CustomPromoData = new();
 
     public static bool HasConflictingOverrides;
 
