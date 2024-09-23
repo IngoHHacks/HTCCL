@@ -12,7 +12,7 @@ public class Plugin : BaseUnityPlugin
 {
     public const string PluginGuid = "IngoH.HardTime.HTCCL";
     public const string PluginName = "HTCCL";
-    public const string PluginVer = "1.0.0";
+    public const string PluginVer = "1.0.1";
     public const string PluginPatchVer = "";
     public const string PluginVerLong = "v" + PluginVer + PluginPatchVer;
     public const float PluginVersion = 1.03f;
@@ -39,7 +39,6 @@ public class Plugin : BaseUnityPlugin
     internal static ConfigEntry<bool> EnableCharacterSearchScreen { get; set; }
     internal static ConfigEntry<bool> EnableGameUnityLog { get; set; }
     internal static ConfigEntry<string> GameUnityLogLevel { get; set; }
-    internal static ConfigEntry<int> BaseFedLimit { get; set; }
     internal static ConfigEntry<int> MaxBackups { get; set; }
     internal static ConfigEntry<bool> CacheEnabled { get; set; }
     internal static ConfigEntry<bool> Debug { get; set; }
@@ -85,8 +84,6 @@ public class Plugin : BaseUnityPlugin
                 new ConfigDescription(
                     "The log level for Unity log messages sent by the game itself. If you don't know what this is, leave it at Warning.",
                     new AcceptableValueList<string>("Error", "Warning", "Info")));
-            BaseFedLimit = this.Config.Bind("General", "BaseFedLimit", 48,
-                "The base limit for the number of characters that can be fed's roster. This actual limit may be increased if characters are imported (Experimental).");
             MaxBackups = this.Config.Bind("General", "MaxBackups", 100,
                 "The maximum number of backups to keep. Set to 0 to disable backups. Set to -1 to keep all backups.");
             CacheEnabled = this.Config.Bind("General", "CacheEnabled", true,

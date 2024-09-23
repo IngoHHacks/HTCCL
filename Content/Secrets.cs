@@ -346,11 +346,6 @@ internal static class Secrets
             return "You set the maximum number of backups to 69. Nice.";
         }
 
-        if (Plugin.BaseFedLimit.Value == 69 && Random.Range(0, 1000) == 0)
-        {
-            return "You set the base federation limit to 69. Nice.";
-        }
-
         if (int.Parse(Plugin.PluginVer.Split('.')[2]) >= 10 && Random.Range(0, 1000) == 0)
         {
             return
