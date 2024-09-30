@@ -12,10 +12,10 @@ public class Plugin : BaseUnityPlugin
 {
     public const string PluginGuid = "IngoH.HardTime.HTCCL";
     public const string PluginName = "HTCCL";
-    public const string PluginVer = "1.0.3";
+    public const string PluginVer = "1.0.4";
     public const string PluginPatchVer = "";
     public const string PluginVerLong = "v" + PluginVer + PluginPatchVer;
-    public const float PluginVersion = 1.03f;
+    public const float PluginVersion = 1.04f;
     public static readonly float GameVersion = MappedGlobals.optVersion;
 
     public const bool PreRelease = false;
@@ -182,7 +182,6 @@ public class Plugin : BaseUnityPlugin
                 MappedSaveSystem.request = 1;
                 return "All characters unlocked!";
             }, true);
-
             
             this.RegisterCustomButton("Unlock All Maps", () =>
             {
@@ -221,6 +220,12 @@ public class Plugin : BaseUnityPlugin
                 MappedSaveSystem.request = 1;
                 return "Everything unlocked!";
             }, true);
+
+            this.RegisterCustomButton("Support Development", () =>
+            {
+                Application.OpenURL("https://ingoh.net/support-htccl");
+                return "Thank you for your support!";
+            });
         }
         catch (Exception e)
         {
