@@ -15,7 +15,7 @@ public class Plugin : BaseUnityPlugin
     public const string PluginVer = "1.0.4";
     public const string PluginPatchVer = "";
     public const string PluginVerLong = "v" + PluginVer + PluginPatchVer;
-    public const float PluginVersion = 1.04f;
+    public const float PluginVersion = 1.06f;
     public static readonly float GameVersion = MappedGlobals.optVersion;
 
     public const bool PreRelease = false;
