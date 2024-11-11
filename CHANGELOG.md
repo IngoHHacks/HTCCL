@@ -1,5 +1,9 @@
 # Changelog
 
+### Release 1.1.0
+- Fixed custom content not being remapped correctly after game updates.
+- Fixed animation issues with custom moves.
+
 ### Release 1.0.4
 - Vanilla skin tones beyond the vanilla texture count are now ignored.
 
