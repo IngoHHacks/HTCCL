@@ -27,9 +27,9 @@ internal class SaveRemapper
         {
             LogInfo($"Game version changed from {oldVersion} to {newVersion}. Updating custom content map.");
 
-            if (ContentMappings.ContentMap.VanillaCounts != null)
+            if (savedMap != null)
             {
-                versionDiff = VersionDiff.GetVersionDiff(ContentMappings.ContentMap.VanillaCounts);
+                versionDiff = VersionDiff.GetVersionDiff(savedMap.VanillaCounts);
             }
         }
         ContentMappings.ContentMap.VanillaCounts = VanillaCounts.Data;
