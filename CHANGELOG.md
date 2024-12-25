@@ -1,5 +1,9 @@
 # Changelog
 
+### Release 1.1.1
+- Fixed various animation issues.
+- Fixed character deletions causing the save file to be corrupted.
+
 ### Release 1.1.0
 - Fixed custom content not being remapped correctly after game updates.
 - Fixed animation issues with custom moves.
