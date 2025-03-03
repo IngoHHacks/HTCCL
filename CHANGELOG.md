@@ -1,5 +1,8 @@
 # Changelog
 
+### Release 1.2.0
+- Fixed `GameObject_texture.png` files not applying correctly.
+
 ### Release 1.1.1
 - Fixed various animation issues.
 - Fixed character deletions causing the save file to be corrupted.
