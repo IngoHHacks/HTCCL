@@ -1,5 +1,10 @@
 # Changelog
 
+### Release 1.2.1
+- Support for nested texture and RawImage overrides.
+- Auto display newly created character on the search list.
+- The exception screen now shows a random phrase instead of "Bummer" on the continue button.
+
 ### Release 1.2.0
 - Fixed `GameObject_texture.png` files not applying correctly.
 
