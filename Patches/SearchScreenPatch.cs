@@ -60,9 +60,25 @@ internal class SearchScreenPatch
         {
             MappedSound.Play(MappedSound.tanoy);
             LogInfo("Creating new character");
-            CharacterUtils.CreateRandomCharacter();
+            int CharID = CharacterUtils.CreateRandomCharacter();
+            LIPNHOMGGHF.NFOPGNENJGP();  //refresh the character selection pages
             MappedSaveSystem.request = 1;
-            __instance.oldFilter = -516391;
+            //__instance.oldFilter = -516391;
+            __instance.oldPage = -516391;
+            for (int i = 0; i < LIPNHOMGGHF.PDKAMOBFEPD.GetLength(0); i++)      //Character selection page matrix
+            {
+                for (int j = 0; j < LIPNHOMGGHF.PDKAMOBFEPD.GetLength(1); j++)
+                {
+                    if (CharID == LIPNHOMGGHF.PDKAMOBFEPD[i, j])
+                    {
+                        MappedMenus.page = i;
+                        MappedMenus.foc = j;
+                        Characters.foc = 0;
+                        return;
+                    }
+                }
+            }
+
         }
     }
     

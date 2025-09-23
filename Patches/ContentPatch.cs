@@ -182,11 +182,15 @@ internal class ContentPatch
                     string shortTexName = material.mainTexture.name.ToLower();
                     string longTexName = gameObject.name.Replace("(Clone)", "").Trim().ToLower() + "_" +
                                                               material.mainTexture.name.ToLower();
+                    string longRendTexName = gameObject.name.Replace("(Clone)", "").Trim().ToLower() + "_" +
+                        renderer.name.Trim().ToLower() + "_" +
+                      material.mainTexture.name.ToLower();
 
                     if (ResourceOverridesTextures.ContainsKey(shortTexName) ||
-                        ResourceOverridesTextures.ContainsKey(longTexName))
+                        ResourceOverridesTextures.ContainsKey(longTexName) ||
+                        ResourceOverridesTextures.ContainsKey(longRendTexName))
                     {
-                        string texName = (ResourceOverridesTextures.ContainsKey(shortTexName)) ? shortTexName: longTexName;
+                        string texName = (ResourceOverridesTextures.ContainsKey(shortTexName)) ? shortTexName : ((ResourceOverridesTextures.ContainsKey(longTexName)) ? longTexName : longRendTexName);
                         Texture2D tex = GetHighestPriorityTextureOverride(texName);
                         if ((material.mainTexture.width != tex.width ||
                             material.mainTexture.height != tex.height) &&
@@ -246,6 +250,30 @@ internal class ContentPatch
                 __instance.m_Sprite.pixelsPerUnit);
         }
     }
+
+   /*
+    * Patch:
+    * - Overrides the textures of the game with overrides for RawImage loaded at runtime.
+    */
+    [HarmonyPatch(typeof(RawImage), nameof(UnityEngine.UI.RawImage.OnPopulateMesh))]
+    [HarmonyPostfix]
+    public static void RawImage(ref RawImage __instance)
+    {
+
+        if (__instance.m_Texture != null && ResourceOverridesTextures.ContainsKey(__instance.m_Texture.name.ToLower()))
+        {
+            Texture2D overrideTexture = GetHighestPriorityTextureOverride(__instance.m_Texture.name.ToLower());
+            if ((__instance.m_Texture.width != overrideTexture.width || __instance.m_Texture.height != overrideTexture.height) && !Plugin.UseFullQualityTextures.Value)
+            {
+                overrideTexture = ResizeTexture(overrideTexture, __instance.m_Texture.width, __instance.m_Texture.height);
+                SetHighestPriorityTextureOverride(__instance.m_Texture.name.ToLower(), overrideTexture);
+            }
+
+            __instance.m_Texture = overrideTexture;
+        }
+    }
+
+
 
     internal static int temp = -1;
 
