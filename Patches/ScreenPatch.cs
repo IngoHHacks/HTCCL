@@ -4,6 +4,7 @@ using System.Runtime.InteropServices;
 using UnityEngine.UI;
 using HTCCL.Saves;
 using Object = UnityEngine.Object;
+using Random = UnityEngine.Random;
 
 namespace HTCCL.Patches;
 
@@ -21,6 +22,11 @@ public class ScreenPatch
     private static int? _nextTitleScreenId;
     private static int? _nextScreenId;
 
+    private const int MAX_VANILLA_SCREEN = 1000;
+    private const int PRIORITY_SCREEN_ID = 1001;
+    private const int FIRST_LAUNCH_SCREEN_ID = 1002;
+    private const int EXCEPTION_SCREEN_ID = 1003;
+
     [HarmonyPatch(typeof(UnmappedMenus), nameof(UnmappedMenus.PMIIOCMHEAE))]
     [HarmonyPrefix]
     public static void Menus_PMIIOCMHEAE_Pre(ref int KBEAJEIMNMI)
@@ -28,7 +34,7 @@ public class ScreenPatch
         if (StackTracePatch.HasException)
         {
             _nextScreenId = KBEAJEIMNMI;
-            _nextTitleScreenId = 1003;
+            _nextTitleScreenId = EXCEPTION_SCREEN_ID;
             StackTracePatch.HasException = false;
             KBEAJEIMNMI = 1;
         }
@@ -51,7 +57,7 @@ public class ScreenPatch
         {
             switch (_nextTitleScreenId)
             {
-                case 1003:
+                case EXCEPTION_SCREEN_ID:
                     MappedMenus.screen = _nextTitleScreenId.Value;
                     _nextTitleScreenId = null;
                     MappedMenus.tab = 0;
@@ -107,7 +113,7 @@ public class ScreenPatch
         else if (MetaFile.Data.FirstLaunch)
         {
             MappedMenus.RemoveExisting();
-            MappedMenus.screen = 1002;
+            MappedMenus.screen = FIRST_LAUNCH_SCREEN_ID;
             MappedMenus.tab = 0;
             MappedMenus.page = 0;
             MappedMenus.Load();
@@ -128,7 +134,7 @@ public class ScreenPatch
         else if (!_initialized && HasConflictingOverrides && !MetaFile.Data.HidePriorityScreenNextTime)
         {
             MappedMenus.RemoveExisting();
-            MappedMenus.screen = 1001;
+            MappedMenus.screen = PRIORITY_SCREEN_ID;
             MappedMenus.tab = 0;
             MappedMenus.page = 0;
             MappedMenus.Load();
@@ -197,7 +203,7 @@ public class ScreenPatch
     {
         try
         {
-            if (MappedMenus.screen > 1000)
+            if (MappedMenus.screen > MAX_VANILLA_SCREEN)
             {
                 MappedControls.GetInput();
                 MappedMenus.FindClicks();
@@ -220,7 +226,7 @@ public class ScreenPatch
                     }
                 }
             }
-            if (MappedMenus.screen == 1001)
+            if (MappedMenus.screen == PRIORITY_SCREEN_ID)
             {
                 MappedMenus.UpdateDisplay();
                 if (MappedMenus.foc > 0 && ((MappedMenu)MappedMenus.menu[MappedMenus.foc]).clicked != 0)
@@ -350,7 +356,7 @@ public class ScreenPatch
                 return false;
             }
 
-            if (MappedMenus.screen == 1002)
+            if (MappedMenus.screen == FIRST_LAUNCH_SCREEN_ID)
             {
                 MappedMenus.UpdateDisplay();
                 
@@ -365,7 +371,7 @@ public class ScreenPatch
                 return false;
             }
             
-            if (MappedMenus.screen == 1003)
+            if (MappedMenus.screen == EXCEPTION_SCREEN_ID)
             {
                 MappedMenus.UpdateDisplay();
                 
@@ -396,7 +402,7 @@ public class ScreenPatch
     [HarmonyPrefix]
     public static bool Menus_ICGNAJFLAHL_Pre(int IPCCBDAFNMC)
     {
-        if (MappedMenus.screen > 1000 || (MappedMenus.screen == 50 && (MappedMenus.page == 0 || MappedMenus.page == 5) && MappedMatch.state == 0))
+        if (MappedMenus.screen > MAX_VANILLA_SCREEN || (MappedMenus.screen == 50 && (MappedMenus.page == 0 || MappedMenus.page == 5) && MappedMatch.state == 0))
         {
             _newScreen = true;
             MappedMenus.RemoveExisting();
@@ -415,7 +421,7 @@ public class ScreenPatch
             MappedMenus.scrollSpeedX = 0f;
             MappedMenus.scrollY = 0f;
             MappedMenus.scrollSpeedY = 0f;
-            if (MappedMenus.screen == 1001)
+            if (MappedMenus.screen == PRIORITY_SCREEN_ID)
             {
                 int rows;
                 int columns;
@@ -445,15 +451,15 @@ public class ScreenPatch
                 MappedMenus.Add();
                 ((MappedMenu) MappedMenus.menu[MappedMenus.no_menus]).Load(1, "Proceed & Hide", 150f, -280, 1.25f, 1.25f);
             }
-            else if (MappedMenus.screen == 1002)
+            else if (MappedMenus.screen == FIRST_LAUNCH_SCREEN_ID)
             {
                 MappedMenus.Add();
                 ((MappedMenu) MappedMenus.menu[MappedMenus.no_menus]).Load(1, "Proceed", 0f, -280, 1.25f, 1.25f);
             }
-            else if (MappedMenus.screen == 1003)
+            else if (MappedMenus.screen == EXCEPTION_SCREEN_ID)
             {
                 MappedMenus.Add();
-                ((MappedMenu) MappedMenus.menu[MappedMenus.no_menus]).Load(1, "Bummer", 0f, -280, 1.25f, 1.25f);
+                ((MappedMenu) MappedMenus.menu[MappedMenus.no_menus]).Load(1, GetDisappointmentPhrase(), 0f, -280, 1.25f, 1.25f);
             }
             else if (MappedMenus.screen == 50 && MappedMatch.state == 0)
             {
@@ -502,6 +508,166 @@ public class ScreenPatch
         }
         return true;
     }
+
+    private static readonly List<string> DISAPPOINTMENT_PHRASES = new()
+    {
+        "0 to 100 real quick",
+        "0/10 would not recommend",
+        "1 star",
+        "Absolutely terrible",
+        "Alas",
+        "At least it didn't crash",
+        "Aw, snap",
+        "Bad RNG",
+        "Be better",
+        "Bet",
+        "Big oof",
+        "Blast",
+        "Blimey",
+        "Bro why",
+        "Bro's chopped",
+        "Broken game",
+        "Bruh",
+        "Bummer",
+        "Clapped",
+        "Could be worse",
+        "Couldn't get past this part",
+        "Crap",
+        "Cringe",
+        "Curses",
+        "D'oh",
+        "Dagnabbit",
+        "Dang",
+        "Darn it",
+        "Deadass",
+        "Devs suck",
+        "Did I do that?",
+        "Do better next time",
+        "Drat",
+        "Epic fail",
+        "Everything's broken",
+        "F",
+        "FR?",
+        "Facts",
+        "FeelsBadMan",
+        "Fiddlesticks",
+        "Figures",
+        "Forgive me",
+        "GG",
+        "Game broke",
+        "Game over",
+        "Git gud",
+        "Good grief",
+        "Happens to the best of us",
+        "Holy moly",
+        "How unfortunate",
+        "I am error",
+        "I blame Ingo",
+        "I blame Mat",
+        "I can't even",
+        "I didn't mean to do that",
+        "I didn't see that coming",
+        "I hate this",
+        "I messed up",
+        "I might have done a thing",
+        "I swear it worked before",
+        "I tried my best",
+        "I'm sorry",
+        "Ingo's fault",
+        "It is what it is",
+        "It's not a bug, it's a feature",
+        "Jiminy Cricket",
+        "Just my luck",
+        "L + Ratio",
+        "L gameplay",
+        "L",
+        "LMAO",
+        "Lame",
+        "Literally unplayable",
+        "Mat's fault",
+        "Maybe next time",
+        "Meh",
+        "Mood",
+        "My bad",
+        "My condolences",
+        "Never lucky",
+        "No cap",
+        "No kidding",
+        "No one saw that, right?",
+        "No u",
+        "No way",
+        "No!",
+        "Not again",
+        "Not fair",
+        "Not impressed",
+        "Not it",
+        "Not pog",
+        "Not recommended",
+        "Oh dear",
+        "Oh no",
+        "On God?",
+        "Oopsie daisy",
+        "Owned",
+        "PepeHands",
+        "Please don't hate me",
+        "Please fix",
+        "RIP",
+        "Rats",
+        "Really now",
+        "Refund now",
+        "Rekt",
+        "Roasted",
+        "Rough day",
+        "SMH",
+        "Sadge",
+        "Same",
+        "Seriously",
+        "Shame",
+        "Shoot",
+        "Skill issue",
+        "So sad",
+        "So true bestie",
+        "Sorry, my bad",
+        "Squirrel",
+        "Sus",
+        "That wasn't supposed to happen",
+        "That's life",
+        "That's rough",
+        "This is bad",
+        "This is fine",
+        "This is not ideal",
+        "This is not my fault",
+        "This is unacceptable",
+        "Try again",
+        "Typical",
+        "Unbelievable",
+        "Uninstalling",
+        "Unlucky",
+        "User error",
+        "Weaksauce",
+        "Well, that escalated quickly",
+        "Well, that happened",
+        "Well, this is awkward",
+        "Well, this is embarrassing",
+        "Well, this is unexpected",
+        "What a pity",
+        "What are the odds",
+        "What the heck",
+        "What",
+        "Whoops",
+        "Why me",
+        "Woe is me",
+        "Worst game ever",
+        "Y tho",
+        "Yikes",
+        "You win this time"
+    };
+    
+    private static string GetDisappointmentPhrase()
+    {
+        return DISAPPOINTMENT_PHRASES[Random.Range(0, DISAPPOINTMENT_PHRASES.Count)];
+    }
+    
     private static IEnumerable<string> SortPrev(List<string> prefixes)
     {
         var prev = MetaFile.Data.PrefixPriorityOrder;
@@ -537,7 +703,7 @@ public class ScreenPatch
                 (FieldInfo)prev2.operand == AccessTools.Field(typeof(UnmappedMenus), nameof(UnmappedMenus.FAKHAFKOBPB)))
             {
                 yield return new CodeInstruction(prev2);
-                yield return new CodeInstruction(OpCodes.Ldc_I4, 1000);
+                yield return new CodeInstruction(OpCodes.Ldc_I4, MAX_VANILLA_SCREEN);
                 if (instruction.opcode == OpCodes.Beq_S)
                 {
                     yield return new CodeInstruction(OpCodes.Bge_S, instruction.operand);
